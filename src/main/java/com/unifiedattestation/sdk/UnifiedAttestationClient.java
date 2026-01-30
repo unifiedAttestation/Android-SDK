@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.unifiedattestation.service.IIntegrityTokenCallback;
 import com.unifiedattestation.service.IUnifiedAttestationService;
@@ -37,6 +38,7 @@ public class UnifiedAttestationClient {
     private final ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
+            Log.i("UA-SDK", "Service connected: " + name.flattenToShortString());
             service = IUnifiedAttestationService.Stub.asInterface(binder);
             List<Runnable> actions = new ArrayList<>(pending);
             pending.clear();
@@ -47,18 +49,23 @@ public class UnifiedAttestationClient {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
+            Log.w("UA-SDK", "Service disconnected: " + name.flattenToShortString());
             service = null;
         }
     };
 
-    public void connect() {
-        if (bound) return;
+    public boolean connect() {
+        if (bound) return true;
         Intent intent = new Intent();
         intent.setComponent(new ComponentName(
                 "com.unifiedattestation.service",
                 "com.unifiedattestation.service.UnifiedAttestationService"
         ));
         bound = context.bindService(intent, connection, Context.BIND_AUTO_CREATE);
+        if (!bound) {
+            Log.e("UA-SDK", "bindService failed; check service install and permissions");
+        }
+        return bound;
     }
 
     public void disconnect() {
@@ -96,7 +103,14 @@ public class UnifiedAttestationClient {
                 return;
             }
             try {
-                service.requestIntegrityToken(backendId, projectId, requestHash,
+                byte[] requestHashBytes = HexUtil.decode(requestHash);
+                String alias = "ua:" + projectId + ":" + backendId;
+                List<String> chain = KeyAttestationManager.getAttestationChain(
+                        context,
+                        alias,
+                        requestHashBytes
+                );
+                service.requestIntegrityTokenWithChain(backendId, projectId, requestHash, chain,
                         new IIntegrityTokenCallback.Stub() {
                             @Override
                             public void onSuccess(String token) {
@@ -121,6 +135,9 @@ public class UnifiedAttestationClient {
             return;
         }
         pending.add(action);
-        connect();
+        if (!connect()) {
+            pending.remove(action);
+            action.run();
+        }
     }
 }
