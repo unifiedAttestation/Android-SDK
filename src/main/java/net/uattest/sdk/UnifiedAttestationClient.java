@@ -1,4 +1,4 @@
-package com.unifiedattestation.sdk;
+package net.uattest.sdk;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -7,8 +7,8 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.unifiedattestation.service.IIntegrityTokenCallback;
-import com.unifiedattestation.service.IUnifiedAttestationService;
+import net.uattest.service.IIntegrityTokenCallback;
+import net.uattest.service.IUnifiedAttestationService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,8 +58,8 @@ public class UnifiedAttestationClient {
         if (bound) return true;
         Intent intent = new Intent();
         intent.setComponent(new ComponentName(
-                "com.unifiedattestation.service",
-                "com.unifiedattestation.service.UnifiedAttestationService"
+                "net.uattest.service",
+                "net.uattest.service.UnifiedAttestationService"
         ));
         bound = context.bindService(intent, connection, Context.BIND_AUTO_CREATE);
         if (!bound) {

@@ -1,4 +1,4 @@
-package com.unifiedattestation.service;
+package net.uattest.service;
 
 interface IIntegrityTokenCallback {
     void onSuccess(String token);

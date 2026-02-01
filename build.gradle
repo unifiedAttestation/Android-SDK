@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 android {
-    namespace 'com.unifiedattestation.sdk'
+    namespace 'net.uattest.sdk'
     compileSdk 34
 
     defaultConfig {

@@ -1,6 +1,6 @@
-package com.unifiedattestation.service;
+package net.uattest.service;
 
-import com.unifiedattestation.service.IIntegrityTokenCallback;
+import net.uattest.service.IIntegrityTokenCallback;
 
 interface IUnifiedAttestationService {
     List<String> getProviderSet(String projectId);

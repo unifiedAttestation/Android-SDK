@@ -1,4 +1,4 @@
-package com.unifiedattestation.sdk;
+package net.uattest.sdk;
 
 import android.content.Context;
 import android.content.SharedPreferences;

@@ -1,4 +1,4 @@
-package com.unifiedattestation.sdk;
+package net.uattest.sdk;
 
 public class HexUtil {
     public static byte[] decode(String hex) {
