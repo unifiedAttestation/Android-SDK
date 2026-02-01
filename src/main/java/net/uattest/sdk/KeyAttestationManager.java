@@ -24,19 +24,32 @@ public class KeyAttestationManager {
         if (ks.containsAlias(alias)) {
             ks.deleteEntry(alias);
         }
-        KeyGenParameterSpec spec = new KeyGenParameterSpec.Builder(
+        KeyGenParameterSpec.Builder specBuilder = new KeyGenParameterSpec.Builder(
                 alias,
                 KeyProperties.PURPOSE_SIGN | KeyProperties.PURPOSE_VERIFY
         )
                 .setDigests(KeyProperties.DIGEST_SHA256)
-                .setAttestationChallenge(requestHash)
-                .build();
-        KeyPairGenerator kpg = KeyPairGenerator.getInstance(
-                KeyProperties.KEY_ALGORITHM_EC,
-                PROVIDER
-        );
-        kpg.initialize(spec);
-        kpg.generateKeyPair();
+                .setAttestationChallenge(requestHash);
+
+        try {
+            KeyGenParameterSpec spec = specBuilder.build();
+            KeyPairGenerator kpg = KeyPairGenerator.getInstance(
+                    KeyProperties.KEY_ALGORITHM_EC,
+                    PROVIDER
+            );
+            kpg.initialize(spec);
+            kpg.generateKeyPair();
+        } catch (Exception ecFailure) {
+            KeyGenParameterSpec spec = specBuilder
+                    .setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PKCS1)
+                    .build();
+            KeyPairGenerator kpg = KeyPairGenerator.getInstance(
+                    KeyProperties.KEY_ALGORITHM_RSA,
+                    PROVIDER
+            );
+            kpg.initialize(spec);
+            kpg.generateKeyPair();
+        }
 
         Certificate[] chain = ks.getCertificateChain(alias);
         if (chain == null || chain.length == 0) {
