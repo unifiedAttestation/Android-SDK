@@ -1,4 +1,7 @@
-apply plugin: 'com.android.library'
+plugins {
+    id 'com.android.library' version '8.2.2' apply true
+    id 'com.vanniktech.maven.publish' version '0.29.0' apply true
+}
 
 android {
     namespace 'net.uattest.sdk'
@@ -22,4 +25,37 @@ android {
 
 dependencies {
 
+}
+
+mavenPublishing {
+    publishToMavenCentral()
+    signAllPublications()
+    coordinates(
+        (findProperty("GROUP_ID") ?: "net.uattest"),
+        (findProperty("ARTIFACT_ID") ?: "android-sdk"),
+        (findProperty("VERSION_NAME") ?: "0.1.0")
+    )
+
+    pom {
+        name = "Unified Attestation Android SDK"
+        description = "Unified Attestation Android SDK"
+        url = "https://github.com/unifiedAttestation/Android-SDK"
+        licenses {
+            license {
+                name = "Apache-2.0"
+                url = "https://www.apache.org/licenses/LICENSE-2.0"
+            }
+        }
+        scm {
+            url = "https://github.com/unifiedAttestation/Android-SDK"
+            connection = "scm:git:https://github.com/unifiedAttestation/Android-SDK.git"
+            developerConnection = "scm:git:ssh://git@github.com/unifiedAttestation/Android-SDK.git"
+        }
+        developers {
+            developer {
+                id = "unifiedattestation"
+                name = "Unified Attestation"
+            }
+        }
+    }
 }
