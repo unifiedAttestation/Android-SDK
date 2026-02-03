@@ -27,8 +27,10 @@ dependencies {
 
 }
 
+import com.vanniktech.maven.publish.SonatypeHost
+
 mavenPublishing {
-    publishToMavenCentral()
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
     coordinates(
         (findProperty("GROUP_ID") ?: "net.uattest"),
